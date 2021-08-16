@@ -1,0 +1,224 @@
+<!--
+Name      : Mohd Danish Shafiq
+Class     : DIT 2B22
+Admin no. : p2043483
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AMA</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<style>
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
+
+    .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+
+    .topnav a:hover {
+        background-color: #666699;
+        color: black;
+    }
+
+    .topnav a.active {
+        background-color: #666699;
+        color: white;
+    }
+
+    .topnav-left {
+        float: left;
+    }
+
+    .topnav-right {
+        float: right;
+    }
+</style>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+        </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <div class="topnav">
+        <div class="topnav-left">
+            <button class="back navBtn" id="back" style="float: left; margin: 6px;">Back</button>
+            <button class="session navBtn" id="refresh" style='float: left; margin: 6px;'>Refresh</button>
+        </div>
+        <div class="topnav-right">
+            <label style="color: white;">SessionID: </label>
+            <input type="text" id="sessionId" readonly>
+        </div>
+    </div>
+    <div class="text-center">
+        <div id="main">
+
+
+        </div>
+        <div id="answers">
+
+
+        </div>
+
+        <form id="add-answer-form" style="margin-top: 2rem;">
+            <div class="form-group">
+                <p style="color: black;">Type answer here</p>
+                <textarea class="form-control" id="answer" rows="3" placeholder=""
+                    style="width: 500px; margin-left: 38rem;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Answer</button>
+        </form>
+    </div>
+
+
+
+
+    <script>
+        const baseUrl = "http://localhost:3000";
+
+        axios.get(`${baseUrl}/session`)
+            .then((response) => {
+                const sessions = response.data;
+                console.log(response.data.length)
+                if (response.data.length == 0) {
+                    window.location.replace("/");
+                } else {
+                    sessions.forEach((session) => {
+                        $('#sessionId').val(session.sessionID);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        var queryParams = new URLSearchParams(window.location.search);
+        console.log("Query Params (source): " + window.location.search);
+        console.log("Query Params (extracted): " + queryParams);
+
+        if (!queryParams.has('questionID')) {
+            console.log("No questionID query parameter found");
+        }
+        const questionID = queryParams.get('questionID');
+        console.log("Query Params (questionID): " + questionID);
+
+        if (isNaN(questionID)) {
+            console.log("Bad questionID data.");
+            $('#main').html("No data.")
+        }
+        axios.get(`${baseUrl}/question/` + questionID)
+            .then((response) => {
+                console.log("-------------Response Data--------------")
+                console.log(response);
+                const questions = response.data;
+                questions.forEach((question) => {
+                    const postHtml = `
+                    <div class="card border border-dark" style="margin-left: 38rem; margin-top: 2rem; width: 500px;">
+                        <div class="card-body">
+                            <p class="card-text">Question: ${question.questions}</p>
+                        </div>
+                    </div>
+                `;
+
+                    $("#main").append(postHtml);
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        axios.get(`${baseUrl}/answer/${questionID}`)
+            .then((response) => {
+                const answers = response.data;
+                answers.forEach((answer) => {
+                    const postHtml = `
+                                        <div class="card border border-dark" style="margin-left: 38rem; margin-top: 2rem; width: 500px;">
+                                            <div class="card-body">
+                                                <p class="card-text">Answer: ${answer.answer}</p>
+                                            </div>
+                                        </div>
+                                `;
+                    $("#answers").append(postHtml); // append - appear at bottom
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        $("#add-answer-form").submit((event) => {
+            // prevents the page from refreshing
+            event.preventDefault();
+
+            // data extraction * compilation
+            const requestBody = {
+                answer: $("#answer").val(),
+                questionID: questionID
+            };
+
+            console.log("-------Compiled Data--------");
+            console.log(requestBody);
+
+            // create the review
+            axios.post(`${baseUrl}/answer`, requestBody)
+                .then((response) => {
+                    // reset form value.
+                    $("#answer").val("");
+
+                    // fetch the review with the returned reviewid
+                    axios.get(`${baseUrl}/answer/${questionID}`)
+                        .then((response) => {
+                            const answers = response.data;
+                            answers.forEach((answer) => {
+                                const postHtml = `
+                                        <div class="card border border-dark" style="margin-left: 38rem; margin-top: 2rem; width: 500px;">
+                                            <div class="card-body">
+                                                <p class="card-text">Answer: ${answer.answer}</p>
+                                            </div>
+                                        </div>
+                                `;
+                                window.alert("answer added successfully");
+                                $("#answers").append(postHtml); // append - appear at bottom
+                            });
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                })
+                .catch((error) => {
+                    window.alert('question already been answered!');
+                });
+        });
+
+        $("#back").on('click', function () {
+            window.location.replace("/questions");
+        });
+
+        // refresh button 
+        $('#refresh').on('click', function () {
+            window.location.reload();
+        });
+    </script>
+
+</body>
+
+</html>

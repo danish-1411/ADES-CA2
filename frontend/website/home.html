@@ -1,0 +1,114 @@
+<!--
+Name      : Mohd Danish Shafiq
+Class     : DIT 2B22
+Admin no. : p2043483
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AMA</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<style>
+    .container {
+        height: 300px;
+        width: 500px;
+        background: white;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+
+    .title {
+        margin: auto;
+        padding-top: 1.5em;
+        padding-bottom: 1em;
+    }
+
+    .ownerLbl {
+        padding-right: .4em;
+    }
+
+    #inputs {
+        padding-bottom: 3.3em;
+    }
+</style>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+        </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <div class="text-center">
+        <div class="container">
+            <h2 class="title">AMA Website</h2>
+
+            <form onsubmit="return false">
+                <div class="inputAndLabel">
+                    <label class="sessionIdLbl" for="SessionID">SessionID:</label>
+                    <input type="text" class="sessionID" id="sessionID">
+                    <p></p>
+                </div>
+
+                <div class="buttonsDiv">
+                    <button id="create" type="submit" class="btn-success">Create Session</button>
+                    <button id="join" type="submit" class="btn-info">Join Session</button>
+                    <div id="wheel" class="spin"></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const baseUrl = "http://localhost:3000";
+
+        $("#join").click((event) => {
+            // prevents the page from refreshing
+            event.preventDefault();
+
+            // data extraction * compilation
+
+            axios.get(`${baseUrl}/session`)
+                        .then((response) => {
+                            const sessions = response.data;
+                            sessions.forEach((session) => {
+                                console.log(session.sessionID)
+                                var inputVal = document.getElementById("sessionID").value;
+                                if(document.getElementById("sessionID").value == session.sessionID) {
+                                    window.location.replace("/questions");
+                                }
+                                else {
+                                    window.alert(inputVal);
+                                }
+                            });
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+        });
+
+        $('#create').on('click', function () {
+            window.location.replace("/create");
+        });
+    </script>
+
+</body>
+
+</html>
