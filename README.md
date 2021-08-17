@@ -4,6 +4,7 @@
    - [install Node.js](https://nodejs.org/en/download/)
    - [install Visual Studio Code](https://nodejs.org/en/download/)
 2. Setup Instructions
+   - Fork the [repository](https://github.com/danish-1411/ADES-CA2)
 
    - Open with GitHub Desktop and click 
       > Open in Visual Studio Code
