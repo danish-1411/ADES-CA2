@@ -29,5 +29,5 @@
       - The website sends HTTP requests in the HTML files using JQuery and axios API
       - Application logic is done in each of the HTML files using JQuery and internal CSS styling is used 
 4. Links to Documentation
-      - API Documentation https://web.postman.co/workspace/My-Workspace~f6adcde2-473b-4f46-8b46-13c8aad7ab94/documentation/13386203-6b8192c4-e7d8-4e0a-945a-6c6abe0a5e23
+      - API Documentation https://documenter.getpostman.com/view/13386203/Tzz8sxUx
 
